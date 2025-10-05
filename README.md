@@ -34,6 +34,14 @@ API REST construida con ASP.NET Core 8 y Entity Framework Core para administrar 
 
 > Si se despliega en produccion, tambien puede definirse la variable de entorno `ConnectionStrings_OracleDbConnection`.
 
+## Scaffold del DbContext
+
+1. Crear previamente el schema `VIKTALEA` en Oracle (por ejemplo `CREATE USER VIKTALEA IDENTIFIED BY ...;` y otorgar privilegios necesarios).
+2. Ejecutar el scaffold para generar `AppDbContext` y las entidades desde la base de datos:
+   ```bash
+   dotnet ef dbcontext scaffold "User Id=VIKTALEA;Password=Viktalea_12345!;Data Source=localhost:1521/XEPDB1" Oracle.EntityFrameworkCore -o Models --context-dir Models -c AppDbContext --schema VIKTALEA --force
+   ```
+
 ## Migraciones y base de datos
 
 - Crear la base de datos a partir de la migracion inicial:
@@ -55,7 +63,7 @@ cd VIKTALEA_Backend
 dotnet watch run --project VIKTALEA_Backend/VIKTALEA_Backend.csproj
 ```
 
-La API se publica por defecto en `https://localhost:7100` (ver perfiles en `Properties/launchSettings.json`) y la documentacion Swagger en `/swagger`.
+La API se publica por defecto en `http://localhost:7100` (ver perfiles en `Properties/launchSettings.json`) y la documentacion Swagger en `/swagger`.
 
 ## Endpoints principales
 
@@ -116,4 +124,7 @@ VIKTALEA_Backend/
 ?   ??? Shared/                # Respuestas genéricas, paginacion y middleware
 ??? README.md
 ```
+
+
+
 

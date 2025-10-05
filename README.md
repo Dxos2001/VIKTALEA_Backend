@@ -65,7 +65,8 @@ La API se publica por defecto en `https://localhost:7100` (ver perfiles en `Prop
 | GET | `/api/Cliente/{id}` | Obtiene un cliente por identificador. |
 | POST | `/api/Cliente` | Crea un nuevo cliente. |
 | PUT | `/api/Cliente/{id}` | Actualiza datos existentes, valida duplicidad de RUC. |
-| DELETE | `/api/Cliente/{id}` | Elimina (hard delete) un cliente. |
+| DELETE | `/api/Cliente/{id}` | Elimina (logic delete) un cliente. |
+| PATCH | `/api/Cliente/{id}` | Activa (logic active) un cliente. |
 
 ### Esquema `Cliente`
 

@@ -5,6 +5,16 @@ using VIKTALEA_Backend.Shared.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -20,6 +30,7 @@ builder.Services.AddScoped<IClienteService, ClienteService>();
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

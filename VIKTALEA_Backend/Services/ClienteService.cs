@@ -192,7 +192,7 @@ namespace VIKTALEA_Backend.Services
             var exists = await _dbContext.Clientes.FirstOrDefaultAsync(x => x.Ruc == cliente.Ruc);
             if (exists != null)
             {
-                if (exists.activate == 0)
+                if (exists.activate == 0 && exists.Ruc != cliente.Ruc)
                 {
                     var apiErrorRuc = new ApiError(
                         "Error",

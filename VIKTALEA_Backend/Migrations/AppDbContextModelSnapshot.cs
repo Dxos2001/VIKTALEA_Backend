@@ -54,10 +54,10 @@ namespace VIKTALEA_Backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)");
 
-                    b.Property<int>("activate")
+                    b.Property<string>("activate")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(1)")
-                        .HasColumnName("ACTIVATE")
+                        .HasColumnType("CHAR(1)")
                         .HasDefaultValueSql("1");
 
                     b.Property<DateTime>("createdAt")

@@ -12,8 +12,8 @@ using VIKTALEA_Backend.Models;
 namespace VIKTALEA_Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251004171250_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251005025708_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,10 +57,10 @@ namespace VIKTALEA_Backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)");
 
-                    b.Property<int>("activate")
+                    b.Property<string>("activate")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(1)")
-                        .HasColumnName("ACTIVATE")
+                        .HasColumnType("CHAR(1)")
                         .HasDefaultValueSql("1");
 
                     b.Property<DateTime>("createdAt")

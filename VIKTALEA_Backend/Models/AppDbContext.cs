@@ -37,9 +37,7 @@ public partial class AppDbContext : DbContext
                 e.Property(x => x.CorreoContacto).HasMaxLength(255);
                 e.Property(x => x.Direccion).HasMaxLength(500);
                 e.Property(x => x.activate)
-                 .HasColumnName("ACTIVATE")
-                 .HasColumnType("NUMBER(1)")
-                 .HasConversion(v => v ? 1 : 0, v => v == 1) 
+                 .HasColumnType("CHAR(1)")
                  .HasDefaultValueSql("1")                    
                  .IsRequired();
                 e.Property(x => x.createdAt).HasDefaultValueSql("SYS_EXTRACT_UTC(SYSTIMESTAMP)");

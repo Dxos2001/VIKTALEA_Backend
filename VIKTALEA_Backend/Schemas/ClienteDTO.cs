@@ -25,13 +25,13 @@ namespace VIKTALEA_Backend.Schemas
             public string? TelefonoContacto { get; set; }
             public string? CorreoContacto { get; set; }
             public string? Direccion { get; set; }
-            public bool activate { get; set; } = true;
+            public int activate { get; set; } = 1;
             public DateTime? updatedAt { get; set; } = DateTime.UtcNow;
         }
 
         public class DeleteCliente()
         {
-            public bool activate { get; set; } = false;
+            public int activate { get; set; } = 0;
             public DateTime? updatedAt { get; set; } = DateTime.UtcNow;
         }
 

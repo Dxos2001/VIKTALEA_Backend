@@ -2,7 +2,7 @@
 {
     public class Controls
     {
-        public bool activate { get; set; } = true;
+        public int activate { get; set; } = 1;
         public DateTime createdAt { get; set; } = DateTime.UtcNow;
         public DateTime? updatedAt { get; set; }
     }

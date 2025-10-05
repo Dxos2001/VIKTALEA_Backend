@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VIKTALEA_Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,7 +26,7 @@ namespace VIKTALEA_Backend.Migrations
                     TelefonoContacto = table.Column<string>(type: "NVARCHAR2(50)", maxLength: 50, nullable: true),
                     CorreoContacto = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: true),
                     Direccion = table.Column<string>(type: "NVARCHAR2(500)", maxLength: 500, nullable: true),
-                    ACTIVATE = table.Column<int>(type: "NUMBER(1)", nullable: false, defaultValueSql: "1"),
+                    activate = table.Column<string>(type: "CHAR(1)", nullable: false, defaultValueSql: "1"),
                     createdAt = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false, defaultValueSql: "SYS_EXTRACT_UTC(SYSTIMESTAMP)"),
                     updatedAt = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: true)
                 },

@@ -1,5 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Build.Experimental;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using VIKTALEA_Backend.Models;
 using VIKTALEA_Backend.Schemas;
@@ -16,14 +18,22 @@ namespace VIKTALEA_Backend.Services
             _dbContext = dbContext;
         }
 
-        public async Task<ApiResponse<List<ClienteDTO.ListCliente>>> ListAsync(string? ruc, string? razonSocial, int page, int pageSize)
+        public async Task<ApiResponse<List<ClienteDTO.ListCliente>>> ListAsync(string? ruc, string? razonSocial, int? active, int page, int pageSize)
         {
             page = page <= 0 ? 1 : page;
             pageSize = pageSize is <= 0 or > 100 ? 20 : pageSize;
 
             var query = _dbContext.Clientes.AsNoTracking().AsQueryable();
 
-            if(!string.IsNullOrWhiteSpace(ruc))
+            if (active == 1)
+            {
+                query = query.Where(x => x.activate == 1);
+            }
+            if (active == 0)
+            {
+                query = query.Where(x => x.activate == active);
+            }
+            if (!string.IsNullOrWhiteSpace(ruc))
             {
                 query = query.Where(c => c.Ruc.Contains(ruc) || EF.Functions.Like(c.Ruc, $"%{ruc}%"));
             }
@@ -46,11 +56,12 @@ namespace VIKTALEA_Backend.Services
                     TelefonoContacto = c.TelefonoContacto,
                     CorreoContacto = c.CorreoContacto,
                     Direccion = c.Direccion,
-                    activate = c.activate,
+                    activate = c.activate,  
                     createdAt = c.createdAt,
                     updatedAt = c.updatedAt
                 })
                 .ToListAsync();
+
             var pagination = new Pagination(totalItems, page, pageSize, totalPages);
             return new ApiResponse<List<ClienteDTO.ListCliente>>(
                 true,
@@ -104,6 +115,20 @@ namespace VIKTALEA_Backend.Services
             var exists = await _dbContext.Clientes.FirstOrDefaultAsync(x => x.Ruc == cliente.Ruc, ct);
             if (exists != null)
             {
+                if (exists.activate == 0)
+                {
+                    var apiErrorRuc = new ApiError(
+                        "Error",
+                        "Cliente con RUC existe pero está inactivo"
+                    );
+                    return new ApiResponse<ClienteDTO.ResponseCliente>(
+                        false,
+                        "RUC_INACTIVE",
+                        null,
+                        apiErrorRuc,
+                        null
+                    );
+                }
                 // Corrige el error de sintaxis y el tipo de argumento para ApiError
                 var apiError = new ApiError(
                     "Error",
@@ -116,6 +141,7 @@ namespace VIKTALEA_Backend.Services
                     apiError,
                     null
                 );
+
             }
             var c = new Clientes
             {
@@ -145,14 +171,57 @@ namespace VIKTALEA_Backend.Services
         {
             var c = await _dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == id);
             if (c == null) return false;
-            _dbContext.Remove(c);
+            if (c.activate == 0) return false;
+            c.activate = 0;
+            await _dbContext.SaveChangesAsync(ct);
+            return true;
+        }
+
+        public async Task<bool> ActiveAsync(int id, CancellationToken ct)
+        {
+            var c = await _dbContext.Clientes.FirstOrDefaultAsync(c => c.Id == id);
+            if (c == null) return false;
+            if (c.activate == 1) return false;
+            c.activate = 1;
             await _dbContext.SaveChangesAsync(ct);
             return true;
         }
 
         public async Task<ApiResponse<ClienteDTO.ResponseCliente?>> UpdateAsync(int id, ClienteDTO.UpdateCliente cliente, CancellationToken ct)
         {
-            var c = await _dbContext.Clientes.FirstOrDefaultAsync(x => x.Id == id, ct);
+            var exists = await _dbContext.Clientes.FirstOrDefaultAsync(x => x.Ruc == cliente.Ruc);
+            if (exists != null)
+            {
+                if (exists.activate == 0)
+                {
+                    var apiErrorRuc = new ApiError(
+                        "Error",
+                        "Cliente con RUC existe pero está inactivo"
+                    );
+                    return new ApiResponse<ClienteDTO.ResponseCliente?>(
+                        false,
+                        "RUC_INACTIVE",
+                        null,
+                        apiErrorRuc,
+                        null
+                    );
+                }
+                if (exists.Ruc != cliente.Ruc)
+                {
+                    var apiError = new ApiError(
+                        "Error",
+                        "RUC ya existente"
+                    );
+                    return new ApiResponse<ClienteDTO.ResponseCliente?>(
+                        false,
+                        "RUC_EXISTS",
+                        null,
+                        apiError,
+                        null
+                    );
+                }
+            }
+            var c = await _dbContext.Clientes.FirstOrDefaultAsync(x => x.Id == id);
             if (c is null)
             {
                 var apiError = new ApiError(
@@ -167,8 +236,9 @@ namespace VIKTALEA_Backend.Services
                     null
                 );
             };
+            
 
-            if(!string.Equals(c.Ruc, cliente.Ruc, StringComparison.Ordinal)){
+            if (!string.Equals(c.Ruc, cliente.Ruc, StringComparison.Ordinal)){
                 var duplicado = await _dbContext.Clientes.FirstOrDefaultAsync(x => x.Ruc == cliente.Ruc && x.Id == id,ct);
                 if (duplicado != null)
                 {

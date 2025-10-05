@@ -21,9 +21,9 @@ namespace VIKTALEA_Backend.Controllers
         
         // GET: api/<ClienteController>
         [HttpGet]
-        public async Task<ApiResponse<List<ClienteDTO.ListCliente>>> List([FromQuery] string? ruc, string? razonSocial, int page = 1, int pageSize = 10, CancellationToken ct = default)
+        public async Task<ApiResponse<List<ClienteDTO.ListCliente>>> List([FromQuery] string? ruc, string? razonSocial, int? active, int page = 1, int pageSize = 10, CancellationToken ct = default)
         {
-            return await service.ListAsync(ruc, razonSocial, page, pageSize);
+            return await service.ListAsync(ruc, razonSocial, active, page, pageSize);
         }
 
         // GET api/<ClienteController>/5
@@ -54,6 +54,12 @@ namespace VIKTALEA_Backend.Controllers
         public Task<bool> Delete(int id)
         {
             return service.DeleteAsync(id, CancellationToken.None);
+        }
+
+        [HttpPatch("{id}")]
+        public Task<bool> Activate(int id)
+        {
+            return service.ActiveAsync(id, CancellationToken.None);
         }
     }
 }
